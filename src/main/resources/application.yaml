@@ -1,14 +1,27 @@
 spring:
   profiles:
-    active: dev
-  web:
-    locale: pt-BR
-    locale-resolver: fixed
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,env,metrics
-  endpoint:
-    health:
-      show-details: always
+    active: prod
+  datasource:
+    show-sql: 'false'
+    url: ${DATABASE_URL}
+    driverClassName: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  server:
+    port: ${PORT:8080}
+    cors: false
+    error:
+      include-stacktrace: never
+      include-exception: 'false'
+      include-binding-errors: always
+      include-message: always
+
+  logging:
+    level:
+      root: INFO
