@@ -1,0 +1,70 @@
+plugins {
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'java'
+    id 'jacoco'
+}
+
+group = 'org.s2v.solar.app'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    junitVersion = '5.10.2'
+    junitLauncherVersion = '1.11.4'
+    lombokVersion = '1.18.36'
+    springDocVersion = '2.5.0'
+    springBootVersion = '3.4.0'
+    postgresVersion = '42.7.5'
+}
+
+dependencies {
+    // Spring Boot dependencies
+    implementation "org.springframework.boot:spring-boot-starter:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-validation:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-amqp"
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework:spring-aspects'
+
+    // Additional dependencies
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:4.0.2"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion"
+    implementation "org.hibernate.validator:hibernate-validator:8.0.2.Final"
+    implementation "jakarta.el:jakarta.el-api:6.0.1"
+
+    // Runtime-only dependencies
+    runtimeOnly "org.postgresql:postgresql:$postgresVersion"
+
+    // Compile-only dependencies
+    compileOnly "jakarta.servlet:jakarta.servlet-api:6.1.0"
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+
+    // Annotation processors
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    // Test dependencies
+    testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
