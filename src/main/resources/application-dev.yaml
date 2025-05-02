@@ -15,7 +15,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 server:
-  port: 8080
+  port: ${PORT:8080}
   cors: false
   error:
     include-stacktrace: never
