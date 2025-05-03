@@ -3,7 +3,7 @@ spring:
     active: prod
   datasource:
     show-sql: 'false'
-    url: ${DATABASE_URL}
+    url: jdbc:postgresql://ep-icy-snowflake-a47subzv-pooler.us-east-1.aws.neon.tech/irradiation_db?user=neondb_owner&password=npg_4kixZ6vMWTje&sslmode=require
     driverClassName: org.postgresql.Driver
   jpa:
     open-in-view: false
