@@ -1,27 +1,14 @@
 spring:
   profiles:
-    active: prod
-  datasource:
-    show-sql: 'false'
-    url: jdbc:postgresql://ep-icy-snowflake-a47subzv-pooler.us-east-1.aws.neon.tech/irradiation_db?user=neondb_owner&password=npg_4kixZ6vMWTje&sslmode=require
-    driverClassName: org.postgresql.Driver
-  jpa:
-    open-in-view: false
-    hibernate:
-      ddl-auto: none
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-  server:
-    port: ${PORT:8080}
-    cors: false
-    error:
-      include-stacktrace: never
-      include-exception: 'false'
-      include-binding-errors: always
-      include-message: always
-
-  logging:
-    level:
-      root: INFO
+    active: ${SPRING_PROFILES_ACTIVE:prod}
+  web:
+    locale: pt-BR
+    locale-resolver: fixed
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,env,metrics
+  endpoint:
+    health:
+      show-details: always
