@@ -5,7 +5,7 @@ spring:
     show-sql: 'true'
     username: postgres
     password: 1234
-    url: jdbc:postgresql://172.17.47.60:5432/irradiation_db
+    url: jdbc:postgresql://ep-icy-snowflake-a47subzv-pooler.us-east-1.aws.neon.tech/irradiation_db?user=neondb_owner&password=npg_4kixZ6vMWTje&sslmode=require
     driverClassName: org.postgresql.Driver
   jpa:
     open-in-view: false
