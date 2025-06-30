@@ -1,4 +1,4 @@
-package br.com.s2v.irradiation.persistence.repository;
+package br.com.s2v.common.persistence.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

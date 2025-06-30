@@ -3,9 +3,9 @@ springdoc:
 spring:
   datasource:
     show-sql: 'true'
+    url: jdbc:postgresql://localhost:5432/
     username: postgres
     password: 1234
-    url: jdbc:postgresql://localhost:5432/irradiation_db
     driverClassName: org.postgresql.Driver
   jpa:
     open-in-view: false

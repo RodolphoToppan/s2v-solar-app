@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,17 +14,17 @@ import lombok.Setter;
 public class CityIrradiation {
     private String cityName;
     private String stateName;
-    private Double annualIrradiation;
-    private Double jan;
-    private Double feb;
-    private Double mar;
-    private Double apr;
-    private Double may;
-    private Double jun;
-    private Double jul;
-    private Double aug;
-    private Double sep;
-    private Double oct;
-    private Double nov;
-    private Double dec;
+    private BigDecimal annualIrradiation;
+    private BigDecimal jan;
+    private BigDecimal feb;
+    private BigDecimal mar;
+    private BigDecimal apr;
+    private BigDecimal may;
+    private BigDecimal jun;
+    private BigDecimal jul;
+    private BigDecimal aug;
+    private BigDecimal sep;
+    private BigDecimal oct;
+    private BigDecimal nov;
+    private BigDecimal dec;
 }

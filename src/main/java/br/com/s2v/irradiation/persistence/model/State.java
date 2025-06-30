@@ -18,7 +18,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "state")
+@Table(name = "state", schema = "irradiation")
 public class State {
 
     @Id

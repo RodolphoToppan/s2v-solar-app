@@ -5,28 +5,29 @@ services:
     image: postgres:15
     container_name: postgres-container
     environment:
-      POSTGRES_USER: user
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: irradiation
+      POSTGRES_DB: s2v-solar
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  app:
-    image: s2v-spring-boot-app:1.0
-    container_name: spring-boot-app
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/irradiation
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: 1234
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
+#  app:
+#    image: s2v-spring-boot-app:1.0
+#    container_name: spring-boot-app
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/irradiation
+#      SPRING_DATASOURCE_USERNAME: user
+#      SPRING_DATASOURCE_PASSWORD: 1234
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - postgres
 
 volumes:
   postgres_data:

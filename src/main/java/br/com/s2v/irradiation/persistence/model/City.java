@@ -17,13 +17,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "city")
+@Table(name = "city", schema = "irradiation")
 public class City {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     @Column(name = "id_city")
-    private long id;
+    private Long id;
 
     @Column(name = "name")
     private String cityName;

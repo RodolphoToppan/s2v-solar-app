@@ -1,12 +1,10 @@
-package br.com.s2v.irradiation.persistence.model;
+package br.com.s2v.solar.persistence.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,20 +14,16 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 @Entity
+@Table(name = "consumption", schema = "projects")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "city_irradiation", schema = "irradiation")
-public class CityIrradiation {
-
+public class Consumption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_city_irradiation")
-    private long id;
-
-    @Column(name = "annual_irradiation")
-    private BigDecimal annualIrradiation;
+    @Column(name = "id_consumption")
+    private Long id;
 
     @Column(name = "jan")
     private BigDecimal jan;
@@ -67,7 +61,4 @@ public class CityIrradiation {
     @Column(name = "dec")
     private BigDecimal dec;
 
-    @OneToOne
-    @JoinColumn(name = "id_city", referencedColumnName = "id_city")
-    private City city;
 }
