@@ -173,6 +173,23 @@ public class SizingServiceImpl implements SizingService {
                         .divide(salePrice, 4, RoundingMode.HALF_UP);
     }
 
+    /**
+     * Calcula o preço por Wp usando o Método da Secante.
+     * <p>
+     * O Método da Secante é uma variação do método de Newton-Raphson que não requer o cálculo
+     * de derivadas. Em vez disso, aproxima a derivada usando dois pontos.
+     * <p>
+     * Matematicamente, queremos encontrar x onde f(x) = 0, onde:
+     * f(x) = margin(x) - desiredMargin
+     * <p>
+     * A fórmula do Método da Secante é:
+     * x[n+1] = x[n] - f(x[n]) * (x[n] - x[n-1]) / (f(x[n]) - f(x[n-1]))
+     * <p>
+     * Esta é uma aproximação da fórmula de Newton-Raphson:
+     * x[n+1] = x[n] - f(x[n])/f'(x[n])
+     * <p>
+     * onde (x[n] - x[n-1])/(f(x[n]) - f(x[n-1])) aproxima 1/f'(x[n])
+     */
     @Override
     public BigDecimal calculatePricePerWp(
             BigDecimal systemPowerInWp,
@@ -182,41 +199,81 @@ public class SizingServiceImpl implements SizingService {
             BigDecimal taxPercentage,
             BigDecimal desiredMargin
     ) {
-        // Convertendo percentuais para decimais
-        //        var commissionRate = commissionPercentage.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP);
-        //        var taxRate = taxPercentage.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP);
-        //        var marginRate = desiredMargin.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP);
-
         if (systemPowerInWp.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;
         }
 
-        BigDecimal pricePerWp = BigDecimal.ONE;
-        BigDecimal obtainedMargin;
-        int maxIterations = 10000;
-        int iterations = 0;
+        // Escolha dos pontos iniciais é crucial para convergência rápida:
+        // minimalTheoricalPrice: preço mínimo teórico (sem margem/impostos/comissão)
+        // initialEstimatedPrice: uma estimativa acima, garantindo que a solução está entre os dois pontos
+        var minimalTheoricalPrice = fixedCosts.divide(systemPowerInWp, 6, RoundingMode.HALF_UP);
+        var initialEstimatedPrice = minimalTheoricalPrice.multiply(BigDecimal.valueOf(2));
+        var acceptableError = BigDecimal.valueOf(0.000001);
+        var maxIterations = 100;
+        var currentIteration = 0;
 
-        while (true) {
-            // Calcula o preço de venda e custos
-            BigDecimal salePrice = pricePerWp.multiply(systemPowerInWp);
-            BigDecimal commission = salePrice.multiply(commissionPercentage);
-            BigDecimal tax = salePrice.subtract(kitValue).multiply(taxPercentage);
-            BigDecimal totalCosts = fixedCosts.add(commission).add(tax);
+        // Calcula o erro da margem no ponto inicial
+        var previousError = calculateMarginError(
+                minimalTheoricalPrice, systemPowerInWp, fixedCosts, kitValue,
+                commissionPercentage, taxPercentage, desiredMargin
+        );
 
-            // Calcula a margem obtida
-            obtainedMargin = salePrice.subtract(totalCosts).divide(salePrice, 6, RoundingMode.HALF_UP);
+        while (currentIteration < maxIterations) {
+            // Calcula o erro da margem no ponto atual
+            var currentError = calculateMarginError(
+                    initialEstimatedPrice, systemPowerInWp, fixedCosts, kitValue,
+                    commissionPercentage, taxPercentage, desiredMargin
+            );
 
-            // Calcula o erro (diferença entre margem obtida e desejada)
-            BigDecimal error = obtainedMargin.subtract(desiredMargin);
-
-            // Verifica se atingiu a precisão desejada ou máximo de iterações
-            if (error.abs().compareTo(BigDecimal.valueOf(0.000001)) < 0 || iterations > maxIterations) {
-                return pricePerWp;
+            // Verifica se encontramos uma solução suficientemente precisa
+            if (currentError.abs().compareTo(acceptableError) < 0) {
+                return initialEstimatedPrice;
             }
 
-            // Ajusta o preço baseado no erro (error * 5)
-            pricePerWp = pricePerWp.subtract(error.multiply(BigDecimal.valueOf(5)));
-            iterations++;
+            // Aplica a fórmula do Método da Secante:
+            // nextPrice = currentPrice - currentError * (currentPrice - previousPrice) / (currentError - previousError)
+            var priceDifference = initialEstimatedPrice.subtract(minimalTheoricalPrice);
+            var errorDifference = currentError.subtract(previousError);
+
+            // Proteção contra divisão por zero (quando a função é muito plana)
+            if (errorDifference.abs().compareTo(acceptableError) < 0) {
+                return initialEstimatedPrice;
+            }
+
+            // Calcula o próximo preço usando a fórmula da secante
+            var nextEstimatedPrice = initialEstimatedPrice.subtract(
+                    currentError.multiply(priceDifference).divide(errorDifference, 6, RoundingMode.HALF_UP)
+            );
+
+            // Atualiza os pontos para a próxima iteração
+            minimalTheoricalPrice = initialEstimatedPrice;
+            initialEstimatedPrice = nextEstimatedPrice;
+            previousError = currentError;
+
+            currentIteration++;
         }
+
+        return initialEstimatedPrice;
+    }
+
+    /**
+     * Calcula o erro entre a margem obtida e a desejada para um dado preço por Wp.
+     */
+    private BigDecimal calculateMarginError(
+            BigDecimal pricePerWp,
+            BigDecimal systemPowerInWp,
+            BigDecimal fixedCosts,
+            BigDecimal kitValue,
+            BigDecimal commissionPercentage,
+            BigDecimal taxPercentage,
+            BigDecimal desiredMargin
+    ) {
+        BigDecimal totalSalePrice = pricePerWp.multiply(systemPowerInWp);
+        BigDecimal commissionValue = totalSalePrice.multiply(commissionPercentage);
+        BigDecimal taxValue = totalSalePrice.subtract(kitValue).multiply(taxPercentage);
+        BigDecimal totalCosts = fixedCosts.add(commissionValue).add(taxValue);
+        BigDecimal actualMargin = totalSalePrice.subtract(totalCosts).divide(totalSalePrice, 6, RoundingMode.HALF_UP);
+
+        return actualMargin.subtract(desiredMargin);
     }
 }
