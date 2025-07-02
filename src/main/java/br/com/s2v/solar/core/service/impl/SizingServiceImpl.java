@@ -218,6 +218,7 @@ public class SizingServiceImpl implements SizingService {
                 commissionPercentage, taxPercentage, desiredMargin
         );
 
+        //TODO: verificar a possibilidade de aplicar função recursiva
         while (currentIteration < maxIterations) {
             // Calcula o erro da margem no ponto atual
             var currentError = calculateMarginError(
