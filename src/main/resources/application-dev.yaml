@@ -1,6 +1,20 @@
 springdoc:
   show-actuator: 'true'
+server:
+  address: 0.0.0.0
+  port: ${PORT:8080}
+  cors: true
+  error:
+    include-stacktrace: never
+    include-exception: 'false'
+    include-binding-errors: always
+    include-message: always
 spring:
+  web:
+    cors:
+      allowed-origins: '*'
+      allowed-methods: '*'
+      allowed-headers: '*'
   datasource:
     show-sql: 'true'
     url: jdbc:postgresql://localhost:5432/
@@ -16,18 +30,3 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-server:
-  port: ${PORT:8080}
-  cors: false
-  error:
-    include-stacktrace: never
-    include-exception: 'false'
-    include-binding-errors: always
-    include-message: always
-
-# Logging Level
-logging:
-  level:
-    br:
-      com:
-        mobiis: DEBUG
